@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AnomaliesRouteImport } from './routes/anomalies'
 import { Route as ClassifyRouteImport } from './routes/classify'
 import { Route as IncidentsRouteImport } from './routes/incidents'
 import { Route as LiveRouteImport } from './routes/live'
 import { Route as PerformanceRouteImport } from './routes/performance'
+import { Route as UploadRouteImport } from './routes/upload'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AnomaliesRoute = AnomaliesRouteImport.update({
@@ -46,55 +53,85 @@ const PerformanceRoute = PerformanceRouteImport.update({
   path: '/performance',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UploadRoute = UploadRouteImport.update({
+  id: '/upload',
+  path: '/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/anomalies': typeof AnomaliesRoute
   '/classify': typeof ClassifyRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/performance': typeof PerformanceRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/anomalies': typeof AnomaliesRoute
   '/classify': typeof ClassifyRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/performance': typeof PerformanceRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/anomalies': typeof AnomaliesRoute
   '/classify': typeof ClassifyRoute
   '/incidents': typeof IncidentsRoute
   '/live': typeof LiveRoute
   '/performance': typeof PerformanceRoute
+  '/upload': typeof UploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/anomalies' | '/classify' | '/incidents' | '/live' | '/performance'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/anomalies' | '/classify' | '/incidents' | '/live' | '/performance'
-  id:
-    | '__root__'
     | '/'
+    | '/about'
     | '/anomalies'
     | '/classify'
     | '/incidents'
     | '/live'
     | '/performance'
+    | '/upload'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/about'
+    | '/anomalies'
+    | '/classify'
+    | '/incidents'
+    | '/live'
+    | '/performance'
+    | '/upload'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/anomalies'
+    | '/classify'
+    | '/incidents'
+    | '/live'
+    | '/performance'
+    | '/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AnomaliesRoute: typeof AnomaliesRoute
   ClassifyRoute: typeof ClassifyRoute
   IncidentsRoute: typeof IncidentsRoute
   LiveRoute: typeof LiveRoute
   PerformanceRoute: typeof PerformanceRoute
+  UploadRoute: typeof UploadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -104,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/anomalies': {
@@ -141,16 +185,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/upload': {
+      id: '/upload'
+      path: '/upload'
+      fullPath: '/upload'
+      preLoaderRoute: typeof UploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AnomaliesRoute: AnomaliesRoute,
   ClassifyRoute: ClassifyRoute,
   IncidentsRoute: IncidentsRoute,
   LiveRoute: LiveRoute,
   PerformanceRoute: PerformanceRoute,
+  UploadRoute: UploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
