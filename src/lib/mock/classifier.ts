@@ -24,7 +24,7 @@ export function hash01(text: string): number {
 export function detectLevel(text: string): LogLevel {
   const m = text.match(/\b(CRITICAL|FATAL|ERROR|WARN(?:ING)?|INFO|DEBUG)\b/);
   if (!m) return "INFO";
-  const v = m[1];
+  const v = m[1] ?? "INFO";
   if (v === "FATAL" || v === "CRITICAL") return "CRITICAL";
   if (v.startsWith("WARN")) return "WARN";
   if (v === "ERROR") return "ERROR";
@@ -273,7 +273,7 @@ export function classifyText(raw: string): ClassificationResult {
   const llmHits = LLM_KEYWORDS.filter((w) => lower.includes(w)).length;
   if (llmHits > 0) {
     const conf = Math.min(0.93, 0.76 + llmHits * 0.04 + jitter * 0.05);
-    trace[3] = { ...trace[3], detail: trace[3].detail + ", sent to LLM" };
+    trace[3] = { ...trace[3]!, detail: trace[3]!.detail + ", sent to LLM" };
     trace.push({
       stage: "LLM Fallback",
       matched: true,
@@ -292,6 +292,6 @@ export function classifyText(raw: string): ClassificationResult {
     detail: "LLM could not map to a known category",
   });
   // DBSCAN made the final call: unknown anomaly
-  trace[3] = { ...trace[3], matched: true };
+  trace[3] = { ...trace[3]!, matched: true };
   return finish("Unknown", "DBSCAN", 0.42 + jitter * 0.2);
 }

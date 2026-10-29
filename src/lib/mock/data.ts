@@ -27,7 +27,7 @@ function mulberry32(seed: number) {
 }
 
 const rng = mulberry32(20261029);
-const pick = <T,>(arr: readonly T[], r = rng) => arr[Math.floor(r() * arr.length)];
+const pick = <T,>(arr: readonly T[], r = rng): T => arr[Math.floor(r() * arr.length)]!;
 const int = (min: number, max: number) => Math.floor(rng() * (max - min + 1)) + min;
 
 interface Template {
@@ -95,7 +95,7 @@ function pickTemplate(r: () => number): Template {
     x -= t.weight;
     if (x <= 0) return t;
   }
-  return TEMPLATES[0];
+  return TEMPLATES[0]!;
 }
 
 function hadoopTs(d: Date) {
@@ -109,7 +109,7 @@ function fill(text: string, d: Date, r: () => number) {
   return text
     .replace("{hts}", hadoopTs(d))
     .replace(/\{ip\}/g, () => `${Math.floor(r() * 200) + 10}.${Math.floor(r() * 255)}.${Math.floor(r() * 255)}.${Math.floor(r() * 254) + 1}`)
-    .replace(/\{email\}/g, () => `${NAMES[Math.floor(r() * NAMES.length)]}@corp.com`)
+    .replace(/\{email\}/g, () => `${NAMES[Math.floor(r() * NAMES.length)]!}@corp.com`)
     .replace(/\{n(\d)\}/g, (_, d) => n(Number(d)));
 }
 
@@ -258,16 +258,16 @@ const unknownCenters: Record<string, [number, number]> = {
 export const anomalyClusters: AnomalyCluster[] = Object.entries(UNKNOWN_SAMPLES).map(
   ([id, samples], i) => ({
     id,
-    label: ["Shard checksum drift", "Telemetry decoder faults", "Phantom partitions"][i],
-    count: [14, 11, 9][i],
+    label: ["Shard checksum drift", "Telemetry decoder faults", "Phantom partitions"][i]!,
+    count: [14, 11, 9][i]!,
     samples,
     labeled_as: null,
-    first_seen: new Date(NOW - [5, 11, 2][i] * 3600_000).toISOString(),
+    first_seen: new Date(NOW - [5, 11, 2][i]! * 3600_000).toISOString(),
   }),
 );
 
 for (const cl of anomalyClusters) {
-  const [cx, cy] = unknownCenters[cl.id];
+  const [cx, cy] = unknownCenters[cl.id]!;
   for (let i = 0; i < cl.count; i++) {
     anomalyPoints.push({
       x: cx + gauss(anomalyRng) * 3.2,
@@ -318,13 +318,13 @@ function buildConfusion(): number[][] {
   return PER_CLASS.map(([, , recall, support], i) => {
     const correct = Math.round(support * recall);
     let remaining = support - correct;
-    const row = PER_CLASS.map(() => 0);
+    const row: number[] = PER_CLASS.map(() => 0);
     row[i] = correct;
     while (remaining > 0) {
       let j = Math.floor(r() * PER_CLASS.length);
       if (j === i) j = (j + 1) % PER_CLASS.length;
       const take = Math.min(remaining, 1 + Math.floor(r() * 4));
-      row[j] += take;
+      row[j] = (row[j] ?? 0) + take;
       remaining -= take;
     }
     return row;

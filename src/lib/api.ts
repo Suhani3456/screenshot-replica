@@ -22,8 +22,8 @@ import type {
   UploadResult,
 } from "@/types";
 
-export const BASE_URL: string = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
-export const USE_MOCK: boolean = (import.meta.env.VITE_USE_MOCK ?? "true") !== "false";
+export const BASE_URL: string = import.meta.env["VITE_API_URL"] ?? "http://localhost:8000";
+export const USE_MOCK: boolean = (import.meta.env["VITE_USE_MOCK"] ?? "true") !== "false";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const latency = () => sleep(180 + Math.random() * 320);
@@ -96,8 +96,8 @@ export async function getIncidentsTimeSeries(): Promise<TimeSeriesPoint[]> {
   for (const r of store.records) {
     if (!isIncident(r)) continue;
     const idx = Math.floor((new Date(r.timestamp).getTime() - start) / 3600_000);
-    const b = buckets[Math.min(23, Math.max(0, idx))];
     if (idx < 0) continue;
+    const b = buckets[Math.min(23, idx)]!;
     b.incidents += 1;
     if (r.severity === "Critical") b.critical += 1;
   }
@@ -230,16 +230,17 @@ export async function uploadLogFile(
   const chunk = Math.max(1, Math.ceil(lines.length / 20));
   const sources: SourceSystem[] = ["CRM", "HRMS", "Billing", "Cloud", "Server"];
   for (let i = 0; i < lines.length; i++) {
-    const r = classifyText(lines[i]);
+    const line = lines[i]!;
+    const r = classifyText(line);
     sevCount[r.severity] = (sevCount[r.severity] ?? 0) + 1;
     catCount[r.category] = (catCount[r.category] ?? 0) + 1;
     if (r.category === "Unknown") unknown++;
     const entry: LogEntry = {
       id: `UPL-${Date.now().toString(36)}-${i}`,
       timestamp: new Date().toISOString(),
-      source: sources[i % sources.length],
-      level: detectLevel(lines[i]),
-      message: lines[i],
+      source: sources[i % sources.length]!,
+      level: detectLevel(line),
+      message: line,
       category: r.category,
       severity: r.severity,
       confidence: r.confidence,

@@ -36,7 +36,7 @@ export const Route = createFileRoute("/anomalies")({
 
 function PointTooltip({ active, payload }: { active?: boolean; payload?: { payload: AnomalyPoint }[] }) {
   if (!active || !payload?.length) return null;
-  const p = payload[0].payload;
+  const p = payload[0]!.payload;
   return (
     <div className="max-w-xs rounded-md border bg-popover p-2.5 text-xs shadow-lg">
       <p className="mb-1 font-semibold" style={{ color: p.is_noise ? "var(--sev-critical)" : CATEGORY_COLOR[p.category] }}>
